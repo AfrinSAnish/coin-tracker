@@ -1,4 +1,4 @@
-package com.shashank.cointrackerapp.presentation.utils
+package com.example.coin_track.di.presentation.utils
 
 import com.shashank.cointrackerapp.R
 

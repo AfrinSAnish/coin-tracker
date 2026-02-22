@@ -1,5 +1,7 @@
 package com.example.coin_track.remote.model.response
 
+import com.squareup.moshi.Json
+
 
 data class Data(
     @Json(name ="changePercent24Hr")
