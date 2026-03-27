@@ -2,9 +2,8 @@ package com.shashank.cointrackerapp.data.mapper
 
 import com.example.coin_track.di.domain.model.Coin
 import com.example.coin_track.di.domain.model.ListOfCoin
-import com.example.coin_track.remote.model.response.CoinDataResponse
 import com.example.coin_track.remote.model.response.CoinListResponse
-
+import com.example.coin_track.remote.model.response.Data
 
 fun CoinListResponse.toCoinList(): ListOfCoin {
     return ListOfCoin(
@@ -13,7 +12,7 @@ fun CoinListResponse.toCoinList(): ListOfCoin {
     )
 }
 
-fun CoinDataResponse.toCoin(): Coin? {
+fun Data.toCoin(): Coin? {
     val id = id ?: return null
     val rank = rank?.toIntOrNull() ?: return null
     val name = name ?: return null
