@@ -1,6 +1,8 @@
 package com.example.coin_track.di
 
 import com.example.coin_track.remote.api.CoinAPI
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,35 +19,27 @@ object NetworkModule {
 
     private const val BASE_URL = "https://rest.coincap.io/v3/"
 
-    @Provides
-    @Singleton
-    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
+    @Provides @Singleton
+    fun provideLoggingInterceptor() = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
-    @Provides
-    @Singleton
-    fun provideOkHttp(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {  // ← was OkHttp
-        return OkHttpClient.Builder()  // ← was missing ()
-            .addInterceptor(loggingInterceptor)
-            .build()
-    }
+    @Provides @Singleton
+    fun provideOkHttp(logging: HttpLoggingInterceptor) = OkHttpClient.Builder()
+        .addInterceptor(logging).build()
 
-    @Provides
-    @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
-            .addConverterFactory(MoshiConverterFactory.create())
-            .client(okHttpClient)
-            .baseUrl(BASE_URL)
-            .build()
-    }
+    @Provides @Singleton
+    fun provideMoshi(): Moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())  // ✅ reflection — no KSP needed
+        .build()
 
-    @Provides
-    @Singleton
-    fun provideCoinApi(retrofit: Retrofit): CoinAPI {  // ← return type was wrong
-        return retrofit.create(CoinAPI::class.java)  // ← was missing retrofit.
-    }
+    @Provides @Singleton
+    fun provideRetrofit(okHttp: OkHttpClient, moshi: Moshi): Retrofit = Retrofit.Builder()
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .client(okHttp)
+        .baseUrl(BASE_URL)
+        .build()
+
+    @Provides @Singleton
+    fun provideCoinApi(retrofit: Retrofit): CoinAPI = retrofit.create(CoinAPI::class.java)
 }

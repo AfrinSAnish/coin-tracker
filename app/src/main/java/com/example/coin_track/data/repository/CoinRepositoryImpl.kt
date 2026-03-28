@@ -10,12 +10,10 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class CoinRepositoryImpl @Inject constructor(val api: CoinAPI) : CoinRepository {
-
     override suspend fun getCoinList(): NetworkResult<Flow<ListOfCoin>> {
         return try {
             val coinListFlow: Flow<ListOfCoin> = flow {
-                val coinList = api.getCoinList().toCoinList()
-                emit(coinList)
+                emit(api.getCoinList().toCoinList())
             }
             NetworkResult.Success(coinListFlow)
         } catch (e: Exception) {
